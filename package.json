@@ -1,0 +1,31 @@
+{
+  "name": "node-split-spawn",
+  "version": "1.0.0",
+  "description": "Split a terminal window up into multiple parallel commands",
+  "main": "index.js",
+  "scripts": {
+    "build": "rollup -c",
+    "build:watch": "rollup -c -w"
+  },
+  "author": "Philip Thrasher <philipthrasher@gmail.com",
+  "license": "MIT",
+  "repository": "git://github.com/pthrasher/node-split-spawn.git",
+  "module": "index.mjs",
+  "dependencies": {
+    "blessed": "^0.1.81",
+    "lodash": "^4.17.4",
+    "tree-kill": "^1.1.0"
+  },
+  "devDependencies": {
+    "babel-plugin-syntax-trailing-function-commas": "^6.22.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
+    "babel-plugin-transform-export-extensions": "^6.22.0",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "rollup": "^0.52.0",
+    "rollup-plugin-babel": "2.7.1",
+    "rollup-plugin-commonjs": "^8.2.6",
+    "rollup-plugin-node-resolve": "^3.0.0"
+  }
+}
