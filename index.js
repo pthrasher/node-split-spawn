@@ -97,7 +97,8 @@ class Viewer {
 }
 
 const opts = {
-  env: { FORCE_COLOR: true },
+  // eslint-disable-next-line prefer-object-spread
+  env: Object.assign({}, process.env, { FORCE_COLOR: true }),
   stdio: 'pipe',
   cwd: process.cwd()
 };
@@ -110,9 +111,8 @@ class Command {
     this.boxOpt = boxOpt;
     this.command = command;
 
-    this.output = '';
     this.error = '';
-    this.out = '';
+    this.output = '';
     this.exitCode = null;
     this.execError = null;
     this.cpHandler = null;
@@ -153,27 +153,26 @@ class Command {
     const { cpHandler } = this;
 
     cpHandler.stdout.on('data', data => {
-      this.output += data;
-      this.box.setContent(this.out += data);
+      this.box.setContent(this.output += data);
       this.box.setScrollPerc(100);
       refresh();
     });
 
     cpHandler.stderr.on('data', data => {
       this.error += data;
-      this.box.setContent(this.out += data);
+      this.box.setContent(this.output += data);
       refresh();
     });
 
     cpHandler.on('close', code => {
       this.exitCode = code;
-      this.box.setContent(this.out += `child process exited with code ${code}`);
+      this.box.setContent(this.output += `child process exited with code ${code}`);
       refresh();
     });
 
     cpHandler.on('error', err => {
       this.execError = err;
-      this.box.setContent(this.out += `child process error ${err}`);
+      this.box.setContent(this.output += `child process error ${err}`);
       refresh();
     });
   }

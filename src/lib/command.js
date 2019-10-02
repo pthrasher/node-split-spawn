@@ -4,7 +4,8 @@ import crossSpawn from 'cross-spawn';
 import blessed from 'blessed';
 
 const opts = {
-  env: { FORCE_COLOR: true },
+  // eslint-disable-next-line prefer-object-spread
+  env: Object.assign({}, process.env, { FORCE_COLOR: true }),
   stdio: 'pipe',
   cwd: process.cwd(),
 };
