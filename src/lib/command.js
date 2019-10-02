@@ -1,11 +1,15 @@
 import { defaults } from 'lodash';
 import kill from 'tree-kill';
-import cp from 'child_process';
+import crossSpawn from 'cross-spawn';
 import blessed from 'blessed';
 
+const opts = { stdio: 'pipe', cwd: process.cwd() };
 
-export default
-class Command {
+const shell = process.platform === 'win32'
+  ? { cmd: 'cmd', arg: '/C' }
+  : { cmd: 'sh', arg: '-c' };
+
+export default class Command {
   constructor(command, opt = {}, boxOpt = {}) {
     this.opt = opt;
     this.boxOpt = boxOpt;
@@ -26,7 +30,7 @@ class Command {
       // width: '40%',
       // height: '50%',
       border: {
-        type: 'line'
+        type: 'line',
       },
       scrollable: true,
       alwaysScroll: true,
@@ -34,24 +38,24 @@ class Command {
       keys: true,
       scrollbar: {
         ch: '|',
-        fg: '#f0a0a0'
+        fg: '#f0a0a0',
       },
     }));
   }
 
   run(refresh) {
     try {
-      this.cpHandler = cp.spawn(this.command, this.opt);
+      this.cpHandler = crossSpawn(shell.cmd, [shell.arg, this.command], opts);
     } catch (e) {
       this.cpHandler = {};
       process.nextTick(() => {
         this.execError = e;
         this.cpHandler = null;
-        refresh()
+        refresh();
       });
       return;
     }
-    const cpHandler = this.cpHandler;
+    const { cpHandler } = this;
 
     cpHandler.stdout.on('data', (data) => {
       this.output += data;
@@ -81,9 +85,11 @@ class Command {
 
   shutdown() {
     if (this.isRunning()) {
-      return new Promise((res, rej) => kill(this.cpHandler.pid, null, (err) => err ? rej(err) : res()));
+      return new Promise(
+        (res, rej) => kill(this.cpHandler.pid, null, (err) => (err ? rej(err) : res())),
+      );
     }
-    return Promise.resolve()
+    return Promise.resolve();
   }
 
   isFailed() {
