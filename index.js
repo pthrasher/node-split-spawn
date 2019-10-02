@@ -5,7 +5,7 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 var lodash = require('lodash');
 var blessed = _interopDefault(require('blessed'));
 var kill = _interopDefault(require('tree-kill'));
-var cp = _interopDefault(require('child_process'));
+var crossSpawn = _interopDefault(require('cross-spawn'));
 
 const streamMap = {
   0: 'out',
@@ -53,15 +53,20 @@ class Viewer {
     }));
     this.box.on('keypress', (ch, key) => {
       if (key.name === 'right' || key.name === 'k') {
-        if (this.selectedStream++ > 2) {
+        this.selectedStream += 1;
+
+        if (this.selectedStream > 2) {
           this.selectedStream = 0;
         }
+
         this.refresh();
         this.box.screen.render();
         return;
       }
       if (key.name === 'left' || key.name === 'j') {
-        if (this.selectedStream-- < 0) {
+        this.selectedStream -= 1;
+
+        if (this.selectedStream < 0) {
           this.selectedStream = 2;
         }
         this.refresh();
@@ -72,7 +77,6 @@ class Viewer {
         this.selectedIndex = -1;
         this.refresh();
         this.box.screen.render();
-        return;
       }
     });
   }
@@ -91,6 +95,10 @@ class Viewer {
     this.formatOutput();
   }
 }
+
+const opts = { stdio: 'pipe', cwd: process.cwd() };
+
+const shell = process.platform === 'win32' ? { cmd: 'cmd', arg: '/C' } : { cmd: 'sh', arg: '-c' };
 
 class Command {
   constructor(command, opt = {}, boxOpt = {}) {
@@ -128,7 +136,7 @@ class Command {
 
   run(refresh) {
     try {
-      this.cpHandler = cp.spawn(this.command, this.opt);
+      this.cpHandler = crossSpawn(shell.cmd, [shell.arg, this.command], opts);
     } catch (e) {
       this.cpHandler = {};
       process.nextTick(() => {
@@ -138,7 +146,7 @@ class Command {
       });
       return;
     }
-    const cpHandler = this.cpHandler;
+    const { cpHandler } = this;
 
     cpHandler.stdout.on('data', data => {
       this.output += data;
@@ -192,29 +200,30 @@ class Command {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var index = function (commandList, screenTitle = "foobar") {
+var index = function (commandList, screenTitle = 'foobar') {
   const screen = blessed.screen({ smartCSR: true });
   let coms = [];
 
   screen.title = screenTitle;
 
   // Quit on Escape, q, or Control-C.
-  screen.key(['q', 'C-c'], function (ch, key) {
+  screen.key(['q', 'C-c'], () => /* ch, key */{
     Promise.all(coms.map(com => com.shutdown())).catch(err => {
+      // eslint-disable-next-line no-console
       console.error(err);
       process.exit(1);
     }).then(() => process.exit(0));
   });
 
   // Focus our element.
-  const width = `${100 / commandList.length | 0}%`;
+  const width = `${100 / commandList.length || 0}%`;
 
   coms = commandList.map((command, i) => {
     const com = { command };
 
     const boxOpt = _extends({}, com.boxOpt || {}, {
       width,
-      left: i ? `${i * 100 / commandList.length | 0}%` : '0'
+      left: i ? `${i * 100 / commandList.length || 0}%` : '0'
     });
 
     const c = new Command(com.command, com.opt || {}, boxOpt);
