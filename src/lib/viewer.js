@@ -27,36 +27,41 @@ class Viewer {
 
   createBox() {
     this.box = blessed.box(defaults(this.boxOpt, {
-      top:          '10%',
-      left:         '0',
-      width:        '100%',
-      height:       '90%',
-      border:       {
-        type: 'line'
+      top: '10%',
+      left: '0',
+      width: '100%',
+      height: '90%',
+      border: {
+        type: 'line',
       },
-      tags:         false,
-      hidden:       true,
-      valign:       'bottom',
-      scrollable:   true,
+      tags: false,
+      hidden: true,
+      valign: 'bottom',
+      scrollable: true,
       alwaysScroll: true,
-      mouse:        false,
-      keys:         true,
-      scrollbar:    {
+      mouse: false,
+      keys: true,
+      scrollbar: {
         ch: '|',
-        fg: '#f0a0a0'
+        fg: '#f0a0a0',
       },
     }));
     this.box.on('keypress', (ch, key) => {
       if (key.name === 'right' || key.name === 'k') {
-        if (this.selectedStream++ > 2) {
+        this.selectedStream += 1;
+
+        if (this.selectedStream > 2) {
           this.selectedStream = 0;
         }
+
         this.refresh();
         this.box.screen.render();
         return;
       }
       if (key.name === 'left' || key.name === 'j') {
-        if (this.selectedStream-- < 0) {
+        this.selectedStream -= 1;
+
+        if (this.selectedStream < 0) {
           this.selectedStream = 2;
         }
         this.refresh();
@@ -67,7 +72,6 @@ class Viewer {
         this.selectedIndex = -1;
         this.refresh();
         this.box.screen.render();
-        return;
       }
     });
   }
