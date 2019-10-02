@@ -13,6 +13,7 @@
   "module": "index.mjs",
   "dependencies": {
     "blessed": "^0.1.81",
+    "cross-spawn": "^7.0.0",
     "lodash": "^4.17.4",
     "tree-kill": "^1.1.0"
   },
@@ -23,6 +24,9 @@
     "babel-plugin-transform-export-extensions": "^6.22.0",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2",
     "rollup": "^0.52.0",
     "rollup-plugin-babel": "2.7.1",
     "rollup-plugin-commonjs": "^8.2.6",
