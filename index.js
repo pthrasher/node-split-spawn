@@ -96,7 +96,11 @@ class Viewer {
   }
 }
 
-const opts = { stdio: 'pipe', cwd: process.cwd() };
+const opts = {
+  env: { FORCE_COLOR: true },
+  stdio: 'pipe',
+  cwd: process.cwd()
+};
 
 const shell = process.platform === 'win32' ? { cmd: 'cmd', arg: '/C' } : { cmd: 'sh', arg: '-c' };
 

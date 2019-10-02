@@ -3,7 +3,11 @@ import kill from 'tree-kill';
 import crossSpawn from 'cross-spawn';
 import blessed from 'blessed';
 
-const opts = { stdio: 'pipe', cwd: process.cwd() };
+const opts = {
+  env: { FORCE_COLOR: true },
+  stdio: 'pipe',
+  cwd: process.cwd(),
+};
 
 const shell = process.platform === 'win32'
   ? { cmd: 'cmd', arg: '/C' }
