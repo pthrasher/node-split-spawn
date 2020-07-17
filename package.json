@@ -13,7 +13,7 @@
   "module": "index.mjs",
   "dependencies": {
     "blessed": "^0.1.81",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.19",
     "tree-kill": "^1.1.0"
   },
   "devDependencies": {
